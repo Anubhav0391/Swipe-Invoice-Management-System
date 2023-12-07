@@ -12,6 +12,7 @@ function InvoiceBulkEdit() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+  const [items, setItems] = useState([]);
 
   const handleInputChange = (index, field, value) => {
     const updatedBulk = [...bulkData];
@@ -23,6 +24,35 @@ function InvoiceBulkEdit() {
 
     setBulkData(updatedBulk);
   };
+
+  const handleInputItem = (index, field, value) => {
+    const updatedItems = [...items];
+
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [field]: value,
+    };
+
+    setItems(updatedItems);
+  };
+
+  const handleItemSave = (id) => {
+    let index = bulkData.findIndex((invoice) => invoice.id == id);
+    let bulk=[...bulkData];
+
+    bulk[index]={...bulk[index],items}
+    setBulkData(bulk)
+    setShow(false);
+    setItems([]);
+  };
+
+  const deleteItem=(i)=>{
+    let item=[...items];
+
+    item.splice(i,1)
+
+    setItems(item)
+  }
 
   const handleUpdateAll = () => {
     dispatch(updateAll(bulkData));
@@ -192,6 +222,7 @@ function InvoiceBulkEdit() {
                       variant="outline-primary"
                       className=" p-1 "
                       onClick={() => {
+                        setItems(invoice.items);
                         setShow(true);
                       }}
                     >
@@ -210,37 +241,39 @@ function InvoiceBulkEdit() {
                       </Modal.Header>
 
                       <Modal.Body>
-                        {invoice.items.map((item, i) => (
+                        <div className=" d-flex gap-2 align-items-center justify-content-between ">
+                          <h5 className=" m-auto "> Name</h5>
+                          <h5 className=" m-auto ">Description</h5>
+                          <h5 className=" m-auto ">Quantity</h5>
+                          <h5 className=" m-auto ">Price</h5>
+                          <h5 className=" m-auto ">Actions</h5>
+                        </div>
+                        {items.map((item, i) => (
                           <div
-                            className=" d-flex gap-2 align-items-center "
+                            className=" d-flex gap-2 align-items-center mt-2 "
                             key={i}
                           >
-                            <h3>{i+1}. </h3>
                             <Form.Control
-                              style={{border:'1px solid gainsboro'}}
+                              style={{ border: "1px solid gainsboro" }}
                               type="text"
                               className=" text-center"
                               value={item.itemName}
                               name="itemName"
                               onChange={(e) =>
-                                handleInputChange(
-                                  index,
-                                  "itemName",
-                                  e.target.value
-                                )
+                                handleInputItem(i, "itemName", e.target.value)
                               }
                               placeholder="item name"
                               required
                             />
                             <Form.Control
-                              style={{border:'1px solid gainsboro'}}
+                              style={{ border: "1px solid gainsboro" }}
                               type="text"
                               className=" text-center"
                               value={item.itemDescription}
                               name="itemDescription"
                               onChange={(e) =>
-                                handleInputChange(
-                                  index,
+                                handleInputItem(
+                                  i,
                                   "itemDescription",
                                   e.target.value
                                 )
@@ -249,14 +282,14 @@ function InvoiceBulkEdit() {
                               required
                             />
                             <Form.Control
-                              style={{border:'1px solid gainsboro'}}
+                              style={{ border: "1px solid gainsboro" }}
                               type="number"
                               className=" text-center"
                               value={item.itemQuantity}
                               name="itemQuantity"
                               onChange={(e) =>
-                                handleInputChange(
-                                  index,
+                                handleInputItem(
+                                  i,
                                   "itemQuantity",
                                   e.target.value
                                 )
@@ -265,25 +298,20 @@ function InvoiceBulkEdit() {
                               required
                             />
                             <Form.Control
-                              style={{border:'1px solid gainsboro'}}
+                              style={{ border: "1px solid gainsboro" }}
                               type="number"
                               className=" text-center"
                               value={item.itemPrice}
                               name="itemPrice"
                               onChange={(e) =>
-                                handleInputChange(
-                                  index,
-                                  "itemPrice",
-                                  e.target.value
-                                )
+                                handleInputItem(i, "itemPrice", e.target.value)
                               }
                               placeholder="item price"
                               required
                             />
                             <Button
                               variant="danger"
-                              onClick={""}
-                              style={{}}
+                              onClick={()=>deleteItem(i)}
                               className="d-flex align-items-center justify-content-center gap-2"
                             >
                               Delete
@@ -291,6 +319,14 @@ function InvoiceBulkEdit() {
                           </div>
                         ))}
                       </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="primary"
+                          onClick={() => handleItemSave(invoice.id)}
+                        >
+                          Save
+                        </Button>
+                      </Modal.Footer>
                     </Modal>
                   </td>
                   <td className=" p-0">
