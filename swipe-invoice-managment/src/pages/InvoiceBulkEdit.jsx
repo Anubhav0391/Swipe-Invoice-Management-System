@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { bulkList, updateBulk } from "../redux/updateSlice";
-import { Button, Card, Col, Form, Modal, Row, Table } from "react-bootstrap";
+import { bulkList } from "../redux/updateSlice";
+import { Button, Card, Form, Modal, Table } from "react-bootstrap";
 import { updateAll } from "../redux/invoicesSlice";
 import { useNavigate } from "react-router-dom";
-import { BiSolidPencil, BiTrash } from "react-icons/bi";
+import { BiSolidPencil } from "react-icons/bi";
 
 function InvoiceBulkEdit() {
   const bulk = useSelector(bulkList);
@@ -22,6 +22,7 @@ function InvoiceBulkEdit() {
       [field]: value,
     };
 
+    updatedBulk[index]=handleCalculateTotal(updatedBulk[index])
     setBulkData(updatedBulk);
   };
 
@@ -36,11 +37,42 @@ function InvoiceBulkEdit() {
     setItems(updatedItems);
   };
 
+  const handleCalculateTotal = (invoice) => {
+      
+      let subTotal = 0;
+
+      invoice.items.forEach((item) => {
+        subTotal +=
+          parseFloat(item.itemPrice).toFixed(2) * parseInt(item.itemQuantity);
+      });
+
+      const taxAmount = parseFloat(
+        subTotal * (invoice.taxRate / 100)
+      ).toFixed(2);
+      const discountAmount = parseFloat(
+        subTotal * (invoice.discountRate / 100)
+      ).toFixed(2);
+      const total = (
+        subTotal -
+        parseFloat(discountAmount) +
+        parseFloat(taxAmount)
+      ).toFixed(2);
+
+      return {
+        ...invoice,
+        subTotal: parseFloat(subTotal).toFixed(2),
+        taxAmount,
+        discountAmount,
+        total,
+      };
+  };
+
   const handleItemSave = (id) => {
     let index = bulkData.findIndex((invoice) => invoice.id == id);
     let bulk=[...bulkData];
 
     bulk[index]={...bulk[index],items}
+    bulk[index]=handleCalculateTotal(bulk[index])
     setBulkData(bulk)
     setShow(false);
     setItems([]);
