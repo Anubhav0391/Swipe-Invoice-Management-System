@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bulkList, updateBulk } from "../redux/updateSlice";
-import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
+import { Button, Card, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { updateAll } from "../redux/invoicesSlice";
 import { useNavigate } from "react-router-dom";
+import { BiSolidPencil } from "react-icons/bi";
 
 function InvoiceBulkEdit() {
   const bulk = useSelector(bulkList);
   const [bulkData, setBulkData] = useState([...bulk]);
-  const dispatch=useDispatch()
-  const navigate=useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [show, setShow] = useState(false);
 
-  const handleInputChange = (index,field, value) => {
+  const handleInputChange = (index, field, value) => {
     const updatedBulk = [...bulkData];
-    
+
     updatedBulk[index] = {
       ...updatedBulk[index],
       [field]: value,
@@ -22,10 +24,10 @@ function InvoiceBulkEdit() {
     setBulkData(updatedBulk);
   };
 
-  const handleUpdateAll=()=>{
+  const handleUpdateAll = () => {
     dispatch(updateAll(bulkData));
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   return (
     bulkData.length && (
@@ -65,10 +67,14 @@ function InvoiceBulkEdit() {
                       value={invoice.invoiceNumber}
                       name="invoiceNumber"
                       onChange={(e) =>
-                        handleInputChange(index,'invoiceNumber', +e.target.value)
+                        handleInputChange(
+                          index,
+                          "invoiceNumber",
+                          +e.target.value
+                        )
                       }
+                      placeholder="invoice no"
                       min="1"
-                      //   style={{maxWidth:'fit-content'}}
                       required
                     />
                   </td>
@@ -79,8 +85,8 @@ function InvoiceBulkEdit() {
                       value={invoice.dateOfIssue}
                       name="dateOfIssue"
                       onChange={(e) =>
-                        handleInputChange(index, 'dateOfIssue',e.target.value)
-                      } // style={{ maxWidth: "150px" }}
+                        handleInputChange(index, "dateOfIssue", e.target.value)
+                      }
                       required
                     />
                   </td>
@@ -91,9 +97,9 @@ function InvoiceBulkEdit() {
                       value={invoice.billTo}
                       name="billTo"
                       onChange={(e) =>
-                        handleInputChange(index, 'billTo',e.target.value)
+                        handleInputChange(index, "billTo", e.target.value)
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="name"
                       required
                     />
                   </td>
@@ -104,9 +110,9 @@ function InvoiceBulkEdit() {
                       value={invoice.billToEmail}
                       name="billToEmail"
                       onChange={(e) =>
-                        handleInputChange(index, 'billToEmail',e.target.value)
+                        handleInputChange(index, "billToEmail", e.target.value)
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="email"
                       required
                     />
                   </td>
@@ -117,9 +123,13 @@ function InvoiceBulkEdit() {
                       value={invoice.billToAddress}
                       name="billToAddress"
                       onChange={(e) =>
-                        handleInputChange(index, 'billToAddress',e.target.value)
+                        handleInputChange(
+                          index,
+                          "billToAddress",
+                          e.target.value
+                        )
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="address"
                       required
                     />
                   </td>
@@ -130,10 +140,10 @@ function InvoiceBulkEdit() {
                       value={invoice.billFrom}
                       name="billFrom"
                       onChange={(e) =>
-                        handleInputChange(index, 'billFrom',e.target.value)
+                        handleInputChange(index, "billFrom", e.target.value)
                       }
-                      // style={{ maxWidth: "150px" }}
                       required
+                      placeholder="name"
                     />
                   </td>
                   <td className=" p-0">
@@ -143,9 +153,13 @@ function InvoiceBulkEdit() {
                       value={invoice.billFromEmail}
                       name="billFromEmail"
                       onChange={(e) =>
-                        handleInputChange(index, 'billFromEmail',e.target.value)
+                        handleInputChange(
+                          index,
+                          "billFromEmail",
+                          e.target.value
+                        )
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="email"
                       required
                     />
                   </td>
@@ -156,31 +170,164 @@ function InvoiceBulkEdit() {
                       value={invoice.billFromAddress}
                       name="billFromAddress"
                       onChange={(e) =>
-                        handleInputChange(index, 'billFromAddress',e.target.value)
+                        handleInputChange(
+                          index,
+                          "billFromAddress",
+                          e.target.value
+                        )
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="address"
                       required
                     />
                   </td>
-                  <td className=" p-0">
+                  <td className=" p-0 d-flex align-items-center px-2">
                     <Form.Control
                       type="text"
                       className=" text-center bg-white"
                       value={invoice.items.length}
-                      name='items'
-                      // onChange={(e) =>
-                      //   // handleInputChange(index, 'items',e.target.value)
-                      // }
-                      // style={{ maxWidth: "150px" }}
+                      name="items"
                       required
                     />
+                    <Button
+                      variant="outline-primary"
+                      className=" p-1 "
+                      onClick={() => {setShow(true)}}
+                    >
+                      <div className="d-flex align-items-center justify-content-center gap-2">
+                        <BiSolidPencil />
+                      </div>
+                    </Button>
+                    <Modal show={show}>
+                      <Modal.Header closeButton onClick={() => {setShow(false)}}>
+                        <Modal.Title>Items</Modal.Title>
+                      </Modal.Header>
+
+                      <Modal.Body>
+                        <Table>
+                          <thead>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                          </thead>
+                          <tbody>
+                            {invoice.items.map((item, i) => {
+                              <tr key={i}>
+                                <td>
+                                  {/* <Form.Control
+                                    type="text"
+                                    className=" text-center bg-white"
+                                    value={item.itemName}
+                                    name="itemName"
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "itemName",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="item name"
+                                    required
+                                  /> */}{item.itemName}
+                                </td>
+                                <td>
+                                  <Form.Control
+                                    type="text"
+                                    className=" text-center bg-white"
+                                    value={item.itemDescription}
+                                    name="itemDescription"
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "itemDescription",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="item description"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <Form.Control
+                                    type="number"
+                                    className=" text-center bg-white"
+                                    value={item.itemQuantity}
+                                    name="itemQuantity"
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "itemQuantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    min={1}
+                                    placeholder="0"
+                                    required
+                                  />
+                                </td>
+                                <td>
+                                  <Form.Control
+                                    type="number"
+                                    className=" text-center bg-white"
+                                    value={item.itemPrice}
+                                    name="itemPrice"
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "itemPrice",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="price"
+                                    required
+                                  />
+                                </td>
+                                <Form.Control
+                                  type="text"
+                                  className=" text-center bg-white"
+                                  value={item.itemName}
+                                  name="discountRate"
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      index,
+                                      "discountRate",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="0.0 %"
+                                  required
+                                />
+                                <td>
+                                  <Form.Control
+                                    type="text"
+                                    className=" text-center bg-white"
+                                    value={item.itemName}
+                                    name="discountRate"
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        index,
+                                        "discountRate",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="0.0 %"
+                                    required
+                                  />
+                                </td>
+                              </tr>;
+                            })}
+                          </tbody>
+                        </Table>
+                      </Modal.Body>
+                    </Modal>
                   </td>
                   <td className=" p-0">
                     <Form.Select
                       name="currency"
                       value={invoice.currency}
                       onChange={(e) =>
-                        handleInputChange(index, 'currency',e.target.value)
+                        handleInputChange(index, "currency", e.target.value)
                       }
                       className="text-center rounded-0 "
                       aria-label="Change Currency"
@@ -202,9 +349,9 @@ function InvoiceBulkEdit() {
                       value={invoice.taxRate}
                       name="taxRate"
                       onChange={(e) =>
-                        handleInputChange(index, 'taxRate',e.target.value)
+                        handleInputChange(index, "taxRate", e.target.value)
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="0.0 %"
                       required
                     />
                   </td>
@@ -215,9 +362,9 @@ function InvoiceBulkEdit() {
                       value={invoice.discountRate}
                       name="discountRate"
                       onChange={(e) =>
-                        handleInputChange(index, 'discountRate',e.target.value)
+                        handleInputChange(index, "discountRate", e.target.value)
                       }
-                      // style={{ maxWidth: "150px" }}
+                      placeholder="0.0 %"
                       required
                     />
                   </td>
