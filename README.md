@@ -10,8 +10,12 @@
 
 ## Developers:
 
-1. Swipe Team : Responsible for feature 1 & 3.
-2. Anbhav Dixit : Responsible for feature 2 & 3.
+1. `Swipe Team` : Responsible for feature 1 & 3.
+2. `Anubhav Dixit` : Responsible for feature 2 & 3.
+
+## Used Tech Stack :
+
+`React` , `Redux` , `Redux Toolkit` , `React Router Dom` and `React Bootstrap` 
 
 ## To Run Locally:
 
