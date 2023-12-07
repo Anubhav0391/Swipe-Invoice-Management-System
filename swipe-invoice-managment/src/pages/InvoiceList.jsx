@@ -6,7 +6,7 @@ import { BsEyeFill } from "react-icons/bs";
 import InvoiceModal from "../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { deleteInvoice } from "../redux/invoicesSlice";
 import { clearBulk, updateBulk } from "../redux/updateSlice";
 
@@ -19,7 +19,6 @@ const InvoiceList = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
   const [bulk, setBulk] = useState([]);
-  const data=useSelector(state=>state.bulk)
 
   const handleCopyClick = () => {
     const invoice = getOneInvoice(copyId);
