@@ -4,7 +4,7 @@ import { bulkList, updateBulk } from "../redux/updateSlice";
 import { Button, Card, Col, Form, Modal, Row, Table } from "react-bootstrap";
 import { updateAll } from "../redux/invoicesSlice";
 import { useNavigate } from "react-router-dom";
-import { BiSolidPencil } from "react-icons/bi";
+import { BiSolidPencil, BiTrash } from "react-icons/bi";
 
 function InvoiceBulkEdit() {
   const bulk = useSelector(bulkList);
@@ -191,134 +191,105 @@ function InvoiceBulkEdit() {
                     <Button
                       variant="outline-primary"
                       className=" p-1 "
-                      onClick={() => {setShow(true)}}
+                      onClick={() => {
+                        setShow(true);
+                      }}
                     >
                       <div className="d-flex align-items-center justify-content-center gap-2">
                         <BiSolidPencil />
                       </div>
                     </Button>
                     <Modal show={show}>
-                      <Modal.Header closeButton onClick={() => {setShow(false)}}>
+                      <Modal.Header
+                        closeButton
+                        onClick={() => {
+                          setShow(false);
+                        }}
+                      >
                         <Modal.Title>Items</Modal.Title>
                       </Modal.Header>
 
                       <Modal.Body>
-                        <Table>
-                          <thead>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                          </thead>
-                          <tbody>
-                            {invoice.items.map((item, i) => {
-                              <tr key={i}>
-                                <td>
-                                  {/* <Form.Control
-                                    type="text"
-                                    className=" text-center bg-white"
-                                    value={item.itemName}
-                                    name="itemName"
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        index,
-                                        "itemName",
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="item name"
-                                    required
-                                  /> */}{item.itemName}
-                                </td>
-                                <td>
-                                  <Form.Control
-                                    type="text"
-                                    className=" text-center bg-white"
-                                    value={item.itemDescription}
-                                    name="itemDescription"
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        index,
-                                        "itemDescription",
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="item description"
-                                    required
-                                  />
-                                </td>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    className=" text-center bg-white"
-                                    value={item.itemQuantity}
-                                    name="itemQuantity"
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        index,
-                                        "itemQuantity",
-                                        e.target.value
-                                      )
-                                    }
-                                    min={1}
-                                    placeholder="0"
-                                    required
-                                  />
-                                </td>
-                                <td>
-                                  <Form.Control
-                                    type="number"
-                                    className=" text-center bg-white"
-                                    value={item.itemPrice}
-                                    name="itemPrice"
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        index,
-                                        "itemPrice",
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="price"
-                                    required
-                                  />
-                                </td>
-                                <Form.Control
-                                  type="text"
-                                  className=" text-center bg-white"
-                                  value={item.itemName}
-                                  name="discountRate"
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      index,
-                                      "discountRate",
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="0.0 %"
-                                  required
-                                />
-                                <td>
-                                  <Form.Control
-                                    type="text"
-                                    className=" text-center bg-white"
-                                    value={item.itemName}
-                                    name="discountRate"
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        index,
-                                        "discountRate",
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="0.0 %"
-                                    required
-                                  />
-                                </td>
-                              </tr>;
-                            })}
-                          </tbody>
-                        </Table>
+                        {invoice.items.map((item, i) => (
+                          <div
+                            className=" d-flex gap-2 align-items-center "
+                            key={i}
+                          >
+                            <h3>{i+1}. </h3>
+                            <Form.Control
+                              style={{border:'1px solid gainsboro'}}
+                              type="text"
+                              className=" text-center"
+                              value={item.itemName}
+                              name="itemName"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "itemName",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="item name"
+                              required
+                            />
+                            <Form.Control
+                              style={{border:'1px solid gainsboro'}}
+                              type="text"
+                              className=" text-center"
+                              value={item.itemDescription}
+                              name="itemDescription"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "itemDescription",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="item description"
+                              required
+                            />
+                            <Form.Control
+                              style={{border:'1px solid gainsboro'}}
+                              type="number"
+                              className=" text-center"
+                              value={item.itemQuantity}
+                              name="itemQuantity"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "itemQuantity",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="item quantity"
+                              required
+                            />
+                            <Form.Control
+                              style={{border:'1px solid gainsboro'}}
+                              type="number"
+                              className=" text-center"
+                              value={item.itemPrice}
+                              name="itemPrice"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  index,
+                                  "itemPrice",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="item price"
+                              required
+                            />
+                            <Button
+                              variant="danger"
+                              onClick={""}
+                              style={{}}
+                              className="d-flex align-items-center justify-content-center gap-2"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        ))}
                       </Modal.Body>
                     </Modal>
                   </td>
