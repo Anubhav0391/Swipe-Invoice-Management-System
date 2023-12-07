@@ -20,3 +20,13 @@
 3. Run Locally : `npm start`
 
 ## Pages:
+
+<img src="https://i.ibb.co/xYMC19V/Screenshot-36.png"/>
+
+<img src="https://i.ibb.co/XZfMhCB/Screenshot-37.png"/>
+
+<img src="https://i.ibb.co/12ZgmX9/Screenshot-39.png"/>
+
+<img src="https://i.ibb.co/HCjZmJf/Screenshot-40.png"/>
+
+<img src="https://i.ibb.co/HTmt1NW/Screenshot-41.png"/>
