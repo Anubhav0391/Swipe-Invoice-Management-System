@@ -40,4 +40,5 @@
 ### Invoice List (on clicking `Bulk Edit`) 
 <img src="https://i.ibb.co/HCjZmJf/Screenshot-40.png"/>
 
+### Bulk Edit (excel like editable interface)
 <img src="https://i.ibb.co/HTmt1NW/Screenshot-41.png"/>
