@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BiSolidPencil, BiTrash } from "react-icons/bi";
@@ -6,14 +6,21 @@ import { BsEyeFill } from "react-icons/bs";
 import InvoiceModal from "../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteInvoice } from "../redux/invoicesSlice";
+import { clearBulk, updateBulk } from "../redux/updateSlice";
 
 const InvoiceList = () => {
   const { invoiceList, getOneInvoice } = useInvoiceListData();
   const isListEmpty = invoiceList.length === 0;
   const [copyId, setCopyId] = useState("");
   const navigate = useNavigate();
+  const dispatch=useDispatch()
+  const [editMode, setEditMode] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
+  const [bulk, setBulk] = useState([]);
+  const data=useSelector(state=>state.bulk)
+
   const handleCopyClick = () => {
     const invoice = getOneInvoice(copyId);
     if (!invoice) {
@@ -23,11 +30,31 @@ const InvoiceList = () => {
     }
   };
 
+  const handleBulkClick=()=>{
+    
+    if(!editMode){
+      setEditMode(true)
+    }else{
+      dispatch(updateBulk(bulk))
+      navigate('/bulk_edit')
+    }
+  }
+
+  useEffect(() => {
+    dispatch(clearBulk());
+
+    if (selectAll) {
+      setBulk([...invoiceList]);
+    } else {
+      setBulk([]);
+    }
+  }, [selectAll]);
+
   return (
     <Row>
-      <Col className="mx-auto" xs={12} md={8} lg={9}>
+      <Col className="mx-auto" xs={12} sm={12} md={12} lg={10}>
         <h3 className="fw-bold pb-2 pb-md-4 text-center">Swipe Assignment</h3>
-        <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
+        <Card className="d-flex p-3 p-md-4 my-3 my-md-4 p-sm-3">
           {isListEmpty ? (
             <div className="d-flex flex-column align-items-center">
               <h3 className="fw-bold pb-2 pb-md-4">No invoices present</h3>
@@ -42,8 +69,15 @@ const InvoiceList = () => {
                 <Link to="/create">
                   <Button variant="primary mb-2 mb-md-4">Create Invoice</Button>
                 </Link>
+                <Button
+                  disabled={editMode && !bulk.length ? true : false}
+                  variant="primary mb-2 mb-md-4"
+                  onClick={handleBulkClick}
+                >
+                  {editMode ? "Next" : "Bulk Edit"}
+                </Button>
 
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-3">
                   <Button variant="dark mb-2 mb-md-4" onClick={handleCopyClick}>
                     Copy Invoice
                   </Button>
@@ -53,9 +87,9 @@ const InvoiceList = () => {
                     value={copyId}
                     onChange={(e) => setCopyId(e.target.value)}
                     placeholder="Enter Invoice ID to copy"
-                    className="bg-white border"
+                    className="bg-white border  "
                     style={{
-                      height: "50px",
+                      height: "40px",
                     }}
                   />
                 </div>
@@ -63,6 +97,13 @@ const InvoiceList = () => {
               <Table responsive>
                 <thead>
                   <tr>
+                    <th className={editMode ? "d-block" : "d-none"}>
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={() => setSelectAll((pre) => !pre)}
+                      />
+                    </th>
                     <th>Invoice No.</th>
                     <th>Bill To</th>
                     <th>Due Date</th>
@@ -76,6 +117,9 @@ const InvoiceList = () => {
                       key={invoice.id}
                       invoice={invoice}
                       navigate={navigate}
+                      bulk={bulk}
+                      setBulk={setBulk}
+                      editMode={editMode}
                     />
                   ))}
                 </tbody>
@@ -88,7 +132,7 @@ const InvoiceList = () => {
   );
 };
 
-const InvoiceRow = ({ invoice, navigate }) => {
+const InvoiceRow = ({ invoice, navigate, bulk, setBulk, editMode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -98,6 +142,16 @@ const InvoiceRow = ({ invoice, navigate }) => {
 
   const handleEditClick = () => {
     navigate(`/edit/${invoice.id}`);
+  };
+
+  const handleBulkEdit = (invoice) => {
+    setBulk((prevBulk) => {
+      if (prevBulk.includes(invoice)) {
+        return prevBulk.filter((el) => el !== invoice);
+      } else {
+        return [...prevBulk, invoice];
+      }
+    });
   };
 
   const openModal = (event) => {
@@ -111,6 +165,15 @@ const InvoiceRow = ({ invoice, navigate }) => {
 
   return (
     <tr>
+      <td className={editMode ? "d-block" : "d-none"}>
+        <input
+          type="checkbox"
+          value={invoice}
+          checked={bulk.includes(invoice)}
+          onChange={() => handleBulkEdit(invoice)}
+          style={{ marginTop: "3px" }}
+        />
+      </td>
       <td>{invoice.invoiceNumber}</td>
       <td className="fw-normal">{invoice.billTo}</td>
       <td className="fw-normal">{invoice.dateOfIssue}</td>

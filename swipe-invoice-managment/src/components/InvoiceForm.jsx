@@ -67,7 +67,6 @@ const InvoiceForm = () => {
   );
 
   useEffect(() => {
-    console.log(typeof(params.id))
     handleCalculateTotal();
   }, []);
 
